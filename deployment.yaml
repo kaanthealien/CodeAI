@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: codeai-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: codeai
+  template:
+    metadata:
+      labels:
+        app: codeai
+    spec:
+      containers:
+      - name: codeai
+        image: kaan1907/codeai:latest
+        ports:
+        - containerPort: 5000
+        env:
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: codeai-secret
+              key: API_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: codeai-service
+spec:
+  type: NodePort
+  selector:
+    app: codeai
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 5000
+    nodePort: 30007
+
